@@ -6,8 +6,8 @@ import { Montserrat } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Suspense } from "react"
-import { AuthProvider } from "@/components/auth/auth-provider"
 import "./globals.css"
+import StoreProvider  from "@/store/StoreProvider"
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -31,7 +31,9 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${montserrat.variable}`}>
         <Suspense fallback={null}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-            <AuthProvider>{children}</AuthProvider>
+          <StoreProvider>
+            {children}
+          </StoreProvider>
           </ThemeProvider>
         </Suspense>
         <Analytics />
