@@ -1,73 +1,79 @@
 
 
-import { CreateUserInput } from "@/lib/type/userType"
+import { api } from "@/lib/api/config"
+import { CreateUserInput, LoginUserInput } from "@/lib/type/userType"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { ApiError } from "next/dist/server/api-utils"
+import { RootState } from "../store"
 
-export const userRegister= createAsyncThunk(
+export const userRegister= createAsyncThunk<any, CreateUserInput,{rejectValue:ApiError}>(
     "user/register",
     async (data: CreateUserInput, thunkAPI) => {
         try {
-            const res= await api
-        } catch (error) {
+            const res= await api.post("/user/register", data)
+            return res.data
+        } catch (error:any) {
+            return thunkAPI.rejectWithValue(error.response.data)
+        }
+    }
+     
+)
+
+export const userLogin= createAsyncThunk<any, LoginUserInput,{rejectValue:ApiError}>(
+    "user/login", 
+    async (data: LoginUserInput, thunkAPI) => {
+        try {
             
+            const res= await api.post("/user/login", data)
+            return res.data
+        } catch (error:any) {
+            console.log('error in thank',error);
+            return thunkAPI.rejectWithValue(error.response.data)
         }
     }
 )
 
-// export const userLogin= createAsyncThunk(
-//     "user/login",
-//     async (data: any, thunkAPI) => {
-//         const response = await fetch("http://localhost:3000/api/user/login", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(data),
-//         })
-//         const data = await response.json()
-//         return data
-//     }
-// )
-
-// export const userLogout= createAsyncThunk(
-//     "user/logout",
-//     async (data: , thunkAPI) => {
-//         const response = await fetch("http://localhost:3000/api/user/logout", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(data),
-//         })
-//         const data = await response.json()
-//         return data
-//     }
-// )
+export const userLogout= createAsyncThunk<any, any,{rejectValue:ApiError}>(
+    "user/logout",
+    async (data: any, thunkAPI) => {
+        try {
+            const res= await api.post("/user/logout", data)
+            return res.data
+        } catch (error:any) {
+            return thunkAPI.rejectWithValue(error.response.data)
+        }
+    }
+)
 
 
-// export const userGetProfile= createAsyncThunk(
-//     "user/getProfile",
-//     async (data: any, thunkAPI) => {
-//         const response = await fetch("http://localhost:3000/api/user/profile", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(data),
-//         })
-//         const data = await response.json()
-//         return data
-//     }
-// )
+export const userGetProfile= createAsyncThunk<any, any,{rejectValue:ApiError}>(
+    "user/getProfile",
+    async (data: {userId:string}, thunkAPI) => {
+        try {
+            const res= await api.get("/user/profile")
+            return res.data
+        } catch (error:any) {
+            return thunkAPI.rejectWithValue(error.response.data)
+        }
+    }
+)
+
+interface UserState {
+  user: any | null
+  isLoading: boolean
+  error: ApiError | null | undefined
+}
+
+const initialState: UserState = {
+  user: null,
+  isLoading: false,
+  error: null,
+}
 
 
 const userSlice = createSlice({
     name: "user",
-    initialState: {
-        user: null,
-        isLoading: false,
-        error: null,
-    },
+     initialState,
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload
@@ -133,3 +139,8 @@ const userSlice = createSlice({
 })
 
 export default userSlice.reducer
+export const { setUser, setIsLoading, setError } = userSlice.actions
+
+export const selectUser = (state: RootState) => state.user.user
+export const selectIsLoading = (state: RootState) => state.user.isLoading
+export const selectError = (state: RootState) => state.user.error
