@@ -14,12 +14,33 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
 
-          const persistedState = localStorage.getItem("persist:root");
-           console.log('persistedState',persistedState);
-           
+    const persistedState: any = localStorage.getItem("persist:root");
+    const parsedState = JSON.parse(persistedState);
+    const data = JSON.parse(parsedState.userData);
+    const accessToken = data?.user?.data?.accessToken; 
+    // console.log('data', data.user.data.accessToken);
+    console.log('config', config);
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
+
+// api.interceptors.response.use(
+//   (response) => {
+//     return response;
+//   },
+//   (error) => {
+//     if (error.response.status === 401) {
+//       // store.dispatch(logout());
+//       window.location.href = '/auth/login';
+//     }
+//     return Promise.reject(error);
+//   }
+// );

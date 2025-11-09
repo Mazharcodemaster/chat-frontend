@@ -38,8 +38,8 @@ export function LoginForm() {
     console.log("✅ Form submitted with data:", data)
     setIsLoading(true)
     try {
-      const result = await dispatch(userLogin(data)).unwrap()
-      console.log("✅ Login successful:", result)
+      // const result = await dispatch(userLogin(data)).unwrap()
+      // console.log("✅ Login successful:", result)
 
       toast({
         title: "Welcome back!",

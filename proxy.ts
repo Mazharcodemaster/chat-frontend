@@ -7,9 +7,9 @@ export function proxy(request: NextRequest) {
   console.log("Token:", token)
 
   // If no token found, redirect to login
-  if (!token) {
-    return NextResponse.redirect(new URL("/auth/login", request.url))
-  }
+  // if (!token) {
+  //   return NextResponse.redirect(new URL("/auth/login", request.url))
+  // }
 
   // Otherwise, allow access
   return NextResponse.next()

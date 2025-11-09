@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
+import { api } from "@/lib/api/config"
 
 interface SidebarProps {
   isOpen: boolean
@@ -62,7 +63,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     { id: 2, name: "Bob Smith", avatar: "/placeholder.svg", online: false, unread: 0 },
     { id: 3, name: "Carol Davis", avatar: "/placeholder.svg", online: true, unread: 1 },
   ]
+const handleClick = async (item:any) => {
 
+  const response = await api.get(`/user/profile`);
+  
+  console.log('item', response);
+};
   return (
     <div
       className={cn(
@@ -108,6 +114,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent",
                     isActive && "bg-sidebar-accent"
                   )}
+                  onClick={()=>handleClick(item)}
                 >
                   <Icon className="h-4 w-4" />
                   {isOpen && <span className="ml-2">{item.label}</span>}

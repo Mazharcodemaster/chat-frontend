@@ -10,27 +10,26 @@ import { RootState } from "@/store/store";
 
 export default function HomePage() {
   const router = useRouter();
-  const userData = useAppSelector(selectUser);
-  const isRehydrated = useAppSelector((state: RootState) => state._persist?.rehydrated);
-  const persistedState :any= localStorage.getItem("persist:root");
+  // const userData = useAppSelector(selectUser);
+  // const isRehydrated = useAppSelector((state: RootState) => state._persist?.rehydrated);
+  // const persistedState :any= localStorage.getItem("persist:root");
   
-  useEffect(() => {
-    const parsedState = JSON.parse(persistedState);
-    const data = JSON.parse(parsedState.userData);
-    console.log('parsedState', data);
-  }, [persistedState]);
+  // useEffect(() => {
+  //   const parsedState = JSON.parse(persistedState);
+  //   const data = JSON.parse(parsedState.userData);
+  // }, [persistedState]);
 
 
-  useEffect(() => {
-    // Only run redirect after rehydration is complete
-    if (isRehydrated && !userData) {
+  // useEffect(() => {
+  //   // Only run redirect after rehydration is complete
+  //   if (isRehydrated && !userData) {
 
-      router.push("/auth/login");
-    }
+  //     router.push("/auth/login");
+  //   }
 
-  }, [userData, isRehydrated, router]);
+  // }, [userData, isRehydrated, router]);
 
-  if (!isRehydrated) return <div>Loading...</div>; // optional loading UI
+  // if (!isRehydrated) return <div>Loading...</div>; // optional loading UI
 
   return (
     <MainLayout>
