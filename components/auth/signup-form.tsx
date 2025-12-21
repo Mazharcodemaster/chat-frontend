@@ -46,8 +46,8 @@ const onSubmit = async (data: CreateUserInput) => {
       title: "Account created successfully",
       description: "You can now log in to your account.",
     })
+    if(result) router.push('/auth/login')
     form.reset()
-    setTimeout(() => router.push("/auth/login"), 1000)
   } catch (error: any) {
     toast({
       title: "Registration failed",

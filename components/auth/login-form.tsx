@@ -35,19 +35,18 @@ export function LoginForm() {
   const { errors } = formState
 
   const onSubmit = async (data: LoginUserInput) => {
-    console.log("✅ Form submitted with data:", data)
     setIsLoading(true)
     try {
-      // const result = await dispatch(userLogin(data)).unwrap()
-      // console.log("✅ Login successful:", result)
+      const result = await dispatch(userLogin(data)).unwrap()
+      console.log("✅ Login successful:", result)
 
       toast({
         title: "Welcome back!",
         description: "You have been successfully signed in.",
       })
 
+      if(result) router.push('/')
       form.reset()
-      setTimeout(() => router.push("/"), 1000)
     } catch (error: any) {
       console.error("❌ Login failed:", error)
       toast({
