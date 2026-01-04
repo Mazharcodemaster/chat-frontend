@@ -8,11 +8,12 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
+  const { username } = params
   return (
     <MainLayout>
       <div className="flex-1 flex">
         <main className="flex-1 flex flex-col">
-          <UserProfile username={params.username} />
+          <UserProfile username={username} />
         </main>
       </div>
     </MainLayout>
