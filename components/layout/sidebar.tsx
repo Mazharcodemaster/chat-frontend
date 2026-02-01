@@ -13,38 +13,47 @@ import {
   ChevronLeft,
   Bell,
   LogOut,
-  FileText,
   MessageCircle,
 } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { api } from "@/lib/api/config"
+import { selectUser, setUser } from "@/store/slice/userSlice"
+import { store } from "@/store/store"
+import { useAppSelector } from "@/store/storeHooks"
+import { useEffect } from "react"
 
 interface SidebarProps {
   isOpen: boolean
   onToggle: () => void
 }
 
-// ✅ Static user data
-const user = {
-  firstName: "John",
-  lastName: "Doe",
-  avatar: "/placeholder.svg?height=32&width=32",
-}
-
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // ✅ Dummy logout for now
-  const handleLogout = () => {
-    console.log("User logged out")
-    router.push("/auth/login")
+  const userData = useAppSelector(selectUser);
+
+  useEffect(() => {
+    console.log('userData',userData);
+
+  
+  }, [userData]);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await api.delete("/user/delete/userSession/")
+    } finally {
+      store.dispatch(setUser(null))
+      router.push("/auth/login")
+    }
   }
 
+  // Navigation items
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: `/profile/${user.firstName.toLowerCase()}`, label: "Profile", icon: Users },
+    { href: userData ? `/profile/${userData?.Id}` : "#", label: "Profile", icon: Users },
     { href: "/chat", label: "Chat", icon: MessageCircle },
     { href: "/connections", label: "Connection", icon: Users },
     { href: "/notifications", label: "Notifications", icon: Bell, badge: 2 },
@@ -63,12 +72,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     { id: 2, name: "Bob Smith", avatar: "/placeholder.svg", online: false, unread: 0 },
     { id: 3, name: "Carol Davis", avatar: "/placeholder.svg", online: true, unread: 1 },
   ]
-const handleClick = async (item:any) => {
 
-  const response = await api.get(`/user/profile`);
-  
-  console.log('item', response);
-};
   return (
     <div
       className={cn(
@@ -77,27 +81,20 @@ const handleClick = async (item:any) => {
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
-          {isOpen && (
-            <h1 className="font-montserrat font-black text-xl text-sidebar-foreground">
-              ChatHub
-            </h1>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggle}
-            className="text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            <ChevronLeft
-              className={cn(
-                "h-4 w-4 transition-transform",
-                !isOpen && "rotate-180"
-              )}
-            />
-          </Button>
-        </div>
+      <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
+        {isOpen && (
+          <h1 className="font-montserrat font-black text-xl text-sidebar-foreground">
+            ChatHub
+          </h1>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onToggle}
+          className="text-sidebar-foreground hover:bg-sidebar-accent"
+        >
+          <ChevronLeft className={cn("h-4 w-4 transition-transform", !isOpen && "rotate-180")} />
+        </Button>
       </div>
 
       {/* Navigation */}
@@ -114,7 +111,6 @@ const handleClick = async (item:any) => {
                     "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent",
                     isActive && "bg-sidebar-accent"
                   )}
-                  onClick={()=>handleClick(item)}
                 >
                   <Icon className="h-4 w-4" />
                   {isOpen && <span className="ml-2">{item.label}</span>}
@@ -206,42 +202,46 @@ const handleClick = async (item:any) => {
       </div>
 
       {/* User Profile */}
-      <div className="p-2 border-t border-sidebar-border">
-        <div className="space-y-2">
-          <Link href={`/profile/${user.firstName.toLowerCase()}`}>
-            <Button variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback>
-                  {user.firstName[0]}
-                  {user.lastName[0]}
-                </AvatarFallback>
-              </Avatar>
-              {isOpen && (
-                <div className="ml-2 flex-1 text-left">
-                  <div className="text-sm font-medium">
-                    {user.firstName} {user.lastName}
+      {userData?.id&& (
+        <div className="p-2 border-t border-sidebar-border">
+          <div className="space-y-2">
+            <Link href={`/profile/${userData?.id}`}>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={userData?.proFileImage || "/placeholder.svg"} />
+                  <AvatarFallback>
+                    {userData?.name}
+                  </AvatarFallback>
+                </Avatar>
+                {isOpen && (
+                  <div className="ml-2 flex-1 text-left">
+                    <div className="text-sm font-medium">
+                      {userData?.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground">Online</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">Online</div>
-                </div>
-              )}
-              {isOpen && <Settings className="h-4 w-4 ml-auto" />}
-            </Button>
-          </Link>
+                )}
+                {isOpen && <Settings className="h-4 w-4 ml-auto" />}
+              </Button>
+            </Link>
 
-          {isOpen && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          )}
+            {isOpen && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="w-full justify-start hover:cursor-pointer text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

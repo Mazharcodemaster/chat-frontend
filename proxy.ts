@@ -1,26 +1,26 @@
-import { NextResponse, NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 
-export function proxy(request: NextRequest) {
-  // ✅ Get cookie safely
-  const token = request.cookies.get("refresh_token")?.value
+export function proxy(req: NextRequest) {
+  const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  
-  // If no token found, redirect to login
-  if (!token) {
-    console.log("No refresh_token found", request.url)
-    return NextResponse.redirect(new URL("/auth/login", request.url))
+  const isAuthRoute = req.nextUrl.pathname.startsWith("/auth");
+
+  if (!refreshToken && !isAuthRoute) {
+    return NextResponse.redirect(
+      new URL("/auth/login", req.url)
+    );
   }
 
-  // Otherwise, allow access
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/about/:path*",
+    "/",
     "/chat/:path*",
+    "/profile/:path*",
     "/connections/:path*",
     "/notifications/:path*",
-    "/profile/:path*",
-    "/settings/:path*"],
-}
+    "/settings/:path*",
+  ],
+};

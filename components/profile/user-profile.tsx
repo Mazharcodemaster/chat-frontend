@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,13 +18,40 @@ import {
   MessageCircle,
 } from "lucide-react"
 import { PostCard } from "@/components/posts/post-card"
+import { useAppDispatch, useAppSelector } from "@/store/storeHooks"
+import { selectUser, userGetProfile } from "@/store/slice/userSlice"
+import { toast } from "@/hooks/use-toast"
 
 interface UserProfileProps {
-  username: string
+  userId: string
 }
 
-export function UserProfile({ username }: UserProfileProps) {
-  const [isFollowing, setIsFollowing] = useState(false)
+export function UserProfile({ userId }: UserProfileProps) {
+  const [isFollowing, setIsFollowing] = useState<boolean>(false)
+const userData= useAppSelector(selectUser);
+  const accessToken = useAppSelector((state) => state.userData.accessToken)
+    const dispatch = useAppDispatch()
+  
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const res = await dispatch(userGetProfile(userId));
+        console.log("res in user profile", res);
+      } catch (error) {
+        console.log("error fetching user profile", error);
+        toast({
+          title: "Error",
+          description: "Failed to load user profile.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (userId && accessToken) {
+      fetchUserProfile();
+    }
+  }, [userId, accessToken, dispatch]);
+
 
   // Mock user data
   const user = {
@@ -124,15 +151,12 @@ export function UserProfile({ username }: UserProfileProps) {
               <div className="flex flex-col items-center md:items-start space-y-4">
                 <div className="relative">
                   <Avatar className="h-24 w-24 md:h-32 md:w-32">
-                    <AvatarImage src={user.avatar || "/placeholder.svg"} />
+                    <AvatarImage src={userData?.proFileImage || "/placeholder.svg"} />
                     <AvatarFallback className="text-2xl">
-                      {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {userData?.name}
                     </AvatarFallback>
                   </Avatar>
-                  {user.isOnline && (
+                  {userData?.isOnline && (
                     <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-green-500 border-4 border-background rounded-full" />
                   )}
                 </div>
@@ -160,15 +184,15 @@ export function UserProfile({ username }: UserProfileProps) {
               <div className="flex-1 space-y-4">
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
-                    <h1 className="text-2xl font-montserrat font-black">{user.name}</h1>
+                    <h1 className="text-2xl font-montserrat font-black">{userData?.name}</h1>
                     {user.verified && (
                       <Badge variant="secondary" className="text-xs">
                         ✓ Verified
                       </Badge>
                     )}
                   </div>
-                  <p className="text-muted-foreground mb-2">{user.username}</p>
-                  <p className="text-foreground leading-relaxed">{user.bio}</p>
+                  <p className="text-muted-foreground mb-2">{userData?.name}</p>
+                  <p className="text-foreground leading-relaxed">{userData?.bio}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">

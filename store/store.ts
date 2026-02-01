@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import  userReducer from './slice/userSlice'
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { setAppStore } from '@/lib/api/config';
 
 const rootReducer = combineReducers({
   userData: userReducer, // this matches your selector (state.userData)
@@ -24,6 +25,8 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
+// provide the store instance to axios config lazily to avoid circular import
+setAppStore(store);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>

@@ -3,17 +3,17 @@ import { MainLayout } from "@/components/layout/main-layout"
 
 interface ProfilePageProps {
   params: {
-    username: string
+    userId: string
   }
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = params
+  const { userId } = params
   return (
     <MainLayout>
       <div className="flex-1 flex">
         <main className="flex-1 flex flex-col">
-          <UserProfile username={username} />
+          <UserProfile userId={userId} />
         </main>
       </div>
     </MainLayout>

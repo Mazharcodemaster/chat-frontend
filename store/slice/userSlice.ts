@@ -50,6 +50,7 @@ export const userGetProfile = createAsyncThunk<any, any, { rejectValue: ApiError
     "user/getProfile",
     async (data: { userId: string }, thunkAPI) => {
         try {
+            console.log('Fetching user profile for userId:', data.userId);
             const res = await api.get("/user/profile")
             return res.data
         } catch (error: any) {
@@ -100,7 +101,7 @@ const userSlice = createSlice({
             .addCase(userRegister.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.user = action.payload.user;
-                 state.accessToken = action.payload.accessToken;
+                state.accessToken = action.payload.accessToken;
             })
             .addCase(userRegister.rejected, (state, action) => {
                 state.isLoading = false
@@ -111,9 +112,9 @@ const userSlice = createSlice({
                 state.error = null
             })
             .addCase(userLogin.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.user = action.payload.user; // backend sends { user, accessToken } 
-                state.accessToken = action.payload.accessToken;
+                state.isLoading = false;
+                state.user = action.payload.data.user;
+                state.accessToken = action.payload.data.accessToken;
             })
             .addCase(userLogin.rejected, (state, action) => {
                 state.isLoading = false
@@ -126,7 +127,7 @@ const userSlice = createSlice({
             .addCase(userLogout.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.user = null;
-                 state.accessToken = null;
+                state.accessToken = null;
             })
             .addCase(userLogout.rejected, (state, action) => {
                 state.isLoading = false
@@ -137,9 +138,7 @@ const userSlice = createSlice({
                 state.error = null
             })
             .addCase(userGetProfile.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.user = action.payload.user; 
-                state.accessToken = action.payload.accessToken;
+                state.user = action.payload.data.user;
             })
             .addCase(userGetProfile.rejected, (state, action) => {
                 state.isLoading = false
@@ -149,7 +148,7 @@ const userSlice = createSlice({
 })
 
 export default userSlice.reducer
-export const { setUser, setIsLoading, setError,setAccessToken } = userSlice.actions
+export const { setUser, setIsLoading, setError, setAccessToken } = userSlice.actions
 
 export const selectUser = (state: RootState) => state.userData.user
 export const selectAccessToken = (state: RootState) => state.userData.accessToken;
