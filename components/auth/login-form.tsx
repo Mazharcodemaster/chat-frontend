@@ -45,7 +45,7 @@ export function LoginForm() {
         description: "You have been successfully signed in.",
       })
 
-      if(result) router.push('/')
+      if (result) router.push('/')
       form.reset()
     } catch (error: any) {
       console.error("❌ Login failed:", error)
@@ -60,10 +60,16 @@ export function LoginForm() {
   }
 
   const handleSocialLogin = (provider: string) => {
-    toast({
-      title: "Coming Soon",
-      description: `${provider} login will be available soon!`,
-    })
+    try {
+         window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/user/auth/google`
+    } catch (error) {
+      toast({
+        title: "Coming Soon",
+        description: `${provider} login will be available soon!`,
+      })
+    }
+
+
   }
 
   return (
@@ -149,11 +155,11 @@ export function LoginForm() {
 
       {/* Social login */}
       <div className="grid grid-cols-2 gap-4">
-        <Button variant="outline" onClick={() => handleSocialLogin("Google")}>
+        <Button className="hover:cur`sor-pointer" variant="outline" onClick={() => handleSocialLogin("Google")}>
           <Mail className="mr-2 h-4 w-4" />
           Google
         </Button>
-        <Button variant="outline" onClick={() => handleSocialLogin("GitHub")}>
+        <Button className="hover:cursor-pointer" variant="outline" onClick={() => handleSocialLogin("GitHub")}>
           <Github className="mr-2 h-4 w-4" />
           GitHub
         </Button>
