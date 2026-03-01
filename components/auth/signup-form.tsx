@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { userRegister } from "@/store/slice/userSlice"
 import { useAppDispatch } from "@/store/storeHooks"
 import { CreateUserInput, createUserType } from "@/lib/type/userType"
+import { StatusCodes } from "@/lib/constant"
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -42,19 +43,20 @@ const onSubmit = async (data: CreateUserInput) => {
   setIsLoading(true)
   try {
     const result = await dispatch(userRegister(data)).unwrap()
-    toast({
-      title: "Account created successfully",
-      description: "You can now log in to your account.",
-    })
-    if(result) router.push('/auth/login')
-    form.reset()
+    if(result && result?.statusCode=== StatusCodes.CREATED) {
+      toast({
+        title: "Account created successfully",
+        description: "You can now log in to your account.",
+      })
+      router.push('/auth/login')
+      form.reset()
+    }
   } catch (error: any) {
     toast({
       title: "Registration failed",
       description: error?.message || "Something went wrong. Please try again.",
       variant: "destructive",
     })
-  } finally {
     setIsLoading(false)
   }
 }

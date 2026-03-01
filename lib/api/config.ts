@@ -5,7 +5,7 @@ let appStore: any = null;
 export const setAppStore = (s: any) => { appStore = s };
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,7 +18,6 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const state = appStore?.getState();
   const accessToken = state?.userData?.accessToken;
-  
   if (accessToken) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -45,12 +44,16 @@ api.interceptors.response.use(
     return res;
   },
   async (error) => {
-    console.log('API error response:', error);
     const originalRequest: any = error.config;
+
+    // Don't attempt token refresh for auth endpoints
+    const authEndpoints = ['/user/login', '/user/signup', '/user/refresh-token'];
+    const isAuthEndpoint = authEndpoints.some(endpoint => originalRequest.url?.includes(endpoint));
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isAuthEndpoint
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

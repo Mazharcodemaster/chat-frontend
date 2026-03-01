@@ -27,7 +27,6 @@ export const userLogin = createAsyncThunk<any, LoginUserInput, { rejectValue: Ap
             const res = await api.post("/user/login", data)
             return res.data
         } catch (error: any) {
-            console.log('error in thank', error);
             return thunkAPI.rejectWithValue(error.response.data)
         }
     }
@@ -50,7 +49,6 @@ export const userGetProfile = createAsyncThunk<any, any, { rejectValue: ApiError
     "user/getProfile",
     async (data: { userId: string }, thunkAPI) => {
         try {
-            console.log('Fetching user profile for userId:', data.userId);
             const res = await api.get("/user/profile")
             return res.data
         } catch (error: any) {

@@ -4,6 +4,8 @@ import "./globals.css";
 import StoreProvider from "@/store/StoreProvider";
 import { Suspense } from "react";
 import ClientThemeProvider from "@/components/client-theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { ToastProvider } from "@/components/ui/toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +36,10 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <ClientThemeProvider>
             <StoreProvider>
-
-              {children}
+              <ToastProvider>
+                {children}
+                <Toaster />
+              </ToastProvider>
             </StoreProvider>
           </ClientThemeProvider>
         </Suspense>
