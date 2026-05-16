@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form"
 import { userLogin } from "@/store/slice/userSlice"
 import { useAppDispatch } from "@/store/storeHooks"
 import { StatusCodes } from "@/lib/constant"
+import { set } from "zod"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -39,13 +40,14 @@ export function LoginForm() {
     setIsLoading(true)
     try {
       const result = await dispatch(userLogin(data)).unwrap()
-
+        console.log("Login result:", result) // Debugging log
       if (result && result.statusCode === StatusCodes.OK) {
         toast({
           title: "Welcome back!",
           description: "You have been successfully signed in.",
         })
         form.reset()
+        setIsLoading(false)
         router.push('/')
 
       }

@@ -6,7 +6,6 @@ import { selectUser } from "@/store/slice/userSlice";
 import { useAppSelector } from "@/store/storeHooks";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { RootState } from "@/store/store";
 
 export default function HomePage() {
   const router = useRouter();
